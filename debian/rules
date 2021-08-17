@@ -1,0 +1,38 @@
+#!/usr/bin/make -f
+
+SHELL := /bin/bash
+
+override_dh_auto_build:
+	mkdir -p bin
+	set -ex && \
+		export CGO_ENABLED=1 && \
+		go build \
+			-mod vendor -buildmode pie -v \
+			-ldflags "-s -w" \
+			-tags "netgo osusergo exclude_graphdriver_devicemapper exclude_graphdriver_btrfs containers_image_openpgp seccomp apparmor" \
+			-o ./bin/podman ./cmd/podman && \
+		go build \
+			-mod vendor -buildmode pie -v \
+			-ldflags "-s -w" \
+			-tags "netgo osusergo exclude_graphdriver_devicemapper exclude_graphdriver_btrfs containers_image_openpgp seccomp apparmor remote" \
+			-o ./bin/podman-remote ./cmd/podman
+
+override_dh_auto_install:
+	install -Dpm755 -d debian/tmp/etc/cni/net.d
+	install -Dpm755 -d debian/tmp/usr/bin
+	install -Dpm755 -d debian/tmp/usr/libexec/podman
+	install -Dpm644 -T cni/87-podman-bridge.conflist debian/tmp/etc/cni/net.d/87-podman.conflist
+	install -Dpm755 -t debian/tmp/usr/bin bin/podman
+	install -Dpm755 -t debian/tmp/usr/bin bin/podman-remote
+	DESTDIR=debian/tmp \
+	PREFIX=/usr \
+	SYSTEMDDIR=/lib/systemd/system \
+	USERSYSTEMDDIR=/lib/systemd/user \
+		make install.completions install.systemd install.docker
+
+override_dh_auto_test:
+
+override_dh_auto_clean:
+
+%:
+	dh $@
