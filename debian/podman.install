@@ -1,0 +1,17 @@
+lib/systemd/system/podman-auto-update.service
+lib/systemd/system/podman-auto-update.timer
+lib/systemd/system/podman-restart.service
+lib/systemd/system/podman.service
+lib/systemd/system/podman.socket
+lib/systemd/user/podman-auto-update.service
+lib/systemd/user/podman-auto-update.timer
+lib/systemd/user/podman-restart.service
+lib/systemd/user/podman.service
+lib/systemd/user/podman.socket
+usr/bin/podman
+usr/share/bash-completion/completions/podman
+usr/share/bash-completion/completions/podman-remote
+usr/share/fish/vendor_completions.d/podman-remote.fish
+usr/share/fish/vendor_completions.d/podman.fish
+usr/share/zsh/site-functions/_podman
+usr/share/zsh/site-functions/_podman-remote
