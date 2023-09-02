@@ -21,6 +21,11 @@ override_dh_auto_build:
 			-ldflags "-s -w" \
 			-tags "netgo osusergo exclude_graphdriver_devicemapper exclude_graphdriver_btrfs containers_image_openpgp seccomp apparmor" \
 			-o ./bin/rootlessport ./cmd/rootlessport
+		go build \
+			-mod vendor -buildmode pie -v \
+			-ldflags "-s -w" \
+			-tags "netgo osusergo exclude_graphdriver_devicemapper exclude_graphdriver_btrfs containers_image_openpgp seccomp apparmor" \
+			-o ./bin/quadlet ./cmd/quadlet
 
 override_dh_auto_install:
 	install -Dpm755 -d debian/tmp/etc/cni/net.d
@@ -30,6 +35,11 @@ override_dh_auto_install:
 	install -Dpm755 -t debian/tmp/usr/bin bin/podman
 	install -Dpm755 -t debian/tmp/usr/bin bin/podman-remote
 	install -Dpm755 -t debian/tmp/usr/libexec/podman bin/rootlessport
+	install -Dpm755 -t debian/tmp/usr/libexec/podman bin/quadlet
+	install -Dpm755 -d debian/tmp/lib/systemd/system-generators
+	install -Dpm755 -d debian/tmp/lib/systemd/user-generators
+	ln -sf /usr/libexec/podman/quadlet debian/tmp/lib/systemd/system-generators/podman-system-generator
+	ln -sf /usr/libexec/podman/quadlet debian/tmp/lib/systemd/user-generators/podman-user-generator
 	DESTDIR=debian/tmp \
 	PREFIX=/usr \
 	BINDIR=/usr/bin \
